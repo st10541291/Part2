@@ -16,100 +16,114 @@ public class Part2_Sending_Messages {
     public static void main(String[] args) {
         
         Scanner scanner = new Scanner (System.in);
-        Random random = new Random();
-        Message message = new Message();
         
-        
+        // Print the welcome message
         System.out.println("Welcome to QuickChat.");
         
-        System.out.print("Enter the number of messages you wish to send: ");
-        int maxMessages = scanner.nextInt();
+        // Get number of messages and declare array to store messages
+        System.out.print("How many messages would you like to send? ");
+        int totalMessages = scanner.nextInt();
         scanner.nextLine();
+
+        // Parallel arrays
+        String[] messageIDs = new String[totalMessages];
+        String[] recipients = new String[totalMessages];
+        String[] messages = new String[totalMessages];
+        String[] messageHashes = new String[totalMessages];
+
+        int messageCounter = 0;
+        int menuChoice;
         
-        // Parallel Arrays
-        
-        String [] messageID =  new String[maxMessages];
-        String [] messageHash = new String[maxMessages];
-        String [] recepient = new String[maxMessages];
-        String [] messageText = new String[maxMessages];
-        
-        int messagesProcessedCount = 0;
-        int totalSuccessfulSends = 0;
-        
-        boolean running = true;
-        
-        while(running){
-            // Display Start Menu
-            System.out.println("\n--- MAIN MENU ---");
-            System.out.println("1) Send Messages");
-            System.out.println("2) Show recently sent messages");
-            System.out.println("3) Quit");
-            System.out.print("Select an option: ");
-            
-            int choice = scanner.nextInt();
+        do {
+
+            System.out.println("\n===== QUICKCHAT MENU =====");
+            System.out.println("1. Send Messages");
+            System.out.println("2. Show recently sent messages");
+            System.out.println("3. Quit");
+            System.out.print("Choose option: ");
+
+            menuChoice = scanner.nextInt();
             scanner.nextLine();
-            
-            // Check which choice a user selected from the menu
-            switch(choice){
+
+            switch (menuChoice) {
+
                 case 1:
-                    // Loop to make sure messages sent equal to number chose at the beginning
-                    while(messagesProcessedCount < maxMessages){
-                        System.out.println("--- Composing Message (" + (messagesProcessedCount + 1) + " of " + maxMessages + ") ---");
-                        
-                        long num = 1000000000L + (long)(random.nextDouble() * 9000000000L);
-                        String generatedID = String.valueOf(num);
-                        
-                        if(!message.checkMessageID(generatedID)){
-                            System.out.println("Error: Failed internal tracking ID length validation.");
-                            break;
-                        }
-                        
-                        String recipientResult = "";
-                        String cell = "";
-                        
-                        while(recipientResult.equals("Cell phone number successfully captured.")){
-                            System.out.println("Enter recipient cell phone number (e.g., +27123456):");
-                            cell = scanner.nextLine();
-                            recipientResult = message.checkRecipientCell(cell);
-                            System.out.println(recipientResult);
-                        }
-                        
-                        // Validate length of message less than 250 characters
-                        String text = "";
-                        boolean validText = false;
-                        while(validText){
-                            System.out.print("Enter your message (Max 250 chars): ");
-                            text = scanner.nextLine();
-                            
-                            if(text.length() <= 250){
-                                System.out.println("Message sent");
-                                validText = true;
-                            }
-                            else{
-                                int extra = text.length() - 250;
-                                System.out.println("Message exceeds 250 characters by " + extra + "; please reduce the size.");
-                            }
-                        }
-                        
-                        messagesProcessedCount = messagesProcessedCount + 1;
+
+                    if (messageCounter >= totalMessages) {
+                        System.out.println("You have reached your message limit.");
+                        break;
                     }
+
+                    System.out.print("Enter recipient cell number: ");
+                    String recipient = scanner.nextLine();
+
+                    System.out.print("Enter message: ");
+                    String messageText = scanner.nextLine();
+
+                    Message message = new Message(recipient, messageText, messageCounter);
+
+                    // Validate recipient
+                    System.out.println(message.checkRecipientCell());
+
+                    if (!message.checkRecipientCell().equals("Cell phone number successfully captured.")) {
+                        break;
+                    }
+
+                    // Validate message length
+                    if (messageText.length() > 250) {
+                        int exceededBy = messageText.length() - 250;
+                        System.out.println(
+                                "Message exceeds 250 characters by " + exceededBy +
+                                "; please reduce the size.");
+                        break;
+                    } else {
+                        System.out.println("Message ready to send.");
+                    }
+
+                    // Send options
+                    System.out.println("\nChoose option:");
+                    System.out.println("1. Send Message");
+                    System.out.println("2. Disregard Message");
+                    System.out.println("3. Store Message to send later");
+
+                    int sendChoice = scanner.nextInt();
+                    scanner.nextLine();
+
+                    String result = message.sentMessage(sendChoice);
+                    System.out.println(result);
+
+                    if (sendChoice == 1 || sendChoice == 3) {
+
+                        // Store in parallel arrays
+                        messageIDs[messageCounter] = message.getMessageID();
+                        recipients[messageCounter] = recipient;
+                        messages[messageCounter] = messageText;
+                        messageHashes[messageCounter] = message.getMessageHash();
+
+                        message.storeMessage();
+
+                        System.out.println("\n===== MESSAGE DETAILS =====");
+                        System.out.println(message.printMessages());
+
+                        messageCounter++;
+                    }
+
                     break;
-                    
+
                 case 2:
-                    // Coming soon feature
                     System.out.println("Coming Soon.");
                     break;
-                    
+
                 case 3:
                     System.out.println("Exiting QuickChat...");
                     break;
-                   
+
                 default:
                     System.out.println("Invalid option.");
-                 
             }
-        }
+
+        } while (menuChoice != 3);
         
-        scanner.close();
+        System.out.println("\nTotal messages sent: " + Message.returnTotalMessages());
     }
 }

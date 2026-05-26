@@ -1,0 +1,35 @@
+{
+"MessageID": "4675510668",
+"MessageHash": "46:0:HELLOYOU?",
+"Recipient": "+27123123122",
+"Message": "Hello brother, how are you?"
+}
+
+{
+"MessageID": "4240417232",
+"MessageHash": "42:1:ITHIS",
+"Recipient": "+27123456789",
+"Message": "I love this"
+}
+
+{
+"MessageID": "1754876034",
+"MessageHash": "17:2:LASTMESSAGE",
+"Recipient": "+27032145698",
+"Message": "Last message"
+}
+
+{
+"MessageID": "1748689118",
+"MessageHash": "17:0:JUSTCHECKING",
+"Recipient": "+27123456789",
+"Message": "Just checking"
+}
+
+{
+"MessageID": "7412555848",
+"MessageHash": "74:1:JUSTAGAIN",
+"Recipient": "+27123456789",
+"Message": "Just checking again"
+}
+
